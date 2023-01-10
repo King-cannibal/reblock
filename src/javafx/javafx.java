@@ -581,7 +581,7 @@ cb("dirt", i2,3,i,blocks);
               
                    
                  
-                    rotation = new Rotate( -3, localPivot.getX(), localPivot.getY(), localPivot.getZ(),
+                    rotation = new Rotate( -0.5, localPivot.getX(), localPivot.getY(), localPivot.getZ(),
                             
                            
                             Rotate.Y_AXIS );
@@ -591,8 +591,8 @@ cb("dirt", i2,3,i,blocks);
                   
               
                    
-y=y-3;
-if(y<-3){
+y=                  (int) (y-(0.5f));
+if(y<-0.5){
     y = 357;
 }
 
@@ -601,7 +601,7 @@ if(y<-3){
                        
                
                       
-                    rotation = new Rotate( +3,localPivot.getX(), localPivot.getY(), localPivot.getZ(),
+                    rotation = new Rotate( +0.5,localPivot.getX(), localPivot.getY(), localPivot.getZ(),
                             
                            
                             Rotate.Y_AXIS );
@@ -610,31 +610,31 @@ if(y<-3){
                        
     
           
-y=y+3;
+y=                  (int) (y+(0.5f));
 if(y>363){
-    y = 3;
+    y = (int) (0.5f);
 }
                          
                 }
                      if ( oldY < newY ) { 
-                          if(x>-150){
-                    rotation2 = new Rotate( -2,
+                          if(x>-60){
+                    rotation2 = new Rotate( -0.5,
                           
                             camera.getTranslateX(),camera.getTranslateY(),camera.getTranslateZ(),
                             Rotate.X_AXIS );
                 
                  camera.getTransforms().addAll( rotation2);
    circ1.getTransforms().addAll( rotation2);
-x=x-2;
+x=                  (int) (x-(0.5f));
 
 
                           }
                           } else if ( oldY > newY ) { 
                                    if(x<50){
-                    rotation2 = new Rotate( +2,camera.getTranslateX(),camera.getTranslateY(),camera.getTranslateZ(),
+                    rotation2 = new Rotate( +0.5,camera.getTranslateX(),camera.getTranslateY(),camera.getTranslateZ(),
                             Rotate.X_AXIS );
                      
-x=x+2;
+x=                  (int) (x+(0.5f));
  
 camera.getTransforms().addAll( rotation2);
    circ1.getTransforms().addAll( rotation2);
