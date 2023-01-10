@@ -1,0 +1,62 @@
+package javafx;
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.Translate;
+import javafx.stage.Stage;
+import javafx.scene.shape.Box;
+import javafx.animation.AnimationTimer;
+import javafx.geometry.Bounds;
+import javafx.scene.paint.PhongMaterial;
+
+public class javafx extends Application {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        // create the first cube
+        Box cube1 = new Box(60, 50, 50);
+        cube1.setMaterial(new PhongMaterial(Color.RED));
+
+        // create the second cube
+        Box cube2 = new Box(60, 50, 50);
+        cube1.setTranslateX(100);
+        cube2.setTranslateX(200);
+        cube2.setMaterial(new PhongMaterial(Color.BLUE));
+        cube2.getTransforms().add(new Translate(0, 0, 100));
+
+        // create a group to hold the cubes
+        Group root = new Group(cube1, cube2);
+
+        // create a scene with the group as the root node
+        Scene scene = new Scene(root, 800, 600);
+
+        // create an animation timer to update the scene
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                // move the first cube to the right
+                cube1.getTransforms().add(new Translate(1, 0, 0));
+
+                // get the bounds of the cubes in the parent coordinate system
+                Bounds bounds1 = cube1.getBoundsInParent();
+                Bounds bounds2 = cube2.getBoundsInParent();
+
+                // check if the bounds of the cubes intersect
+                if (bounds1.intersects(bounds2)) {
+                 System.out.println ("ee");
+                }
+            }
+        };
+
+        // start the animation timer
+        timer.start();
+
+        // show the stage
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+}

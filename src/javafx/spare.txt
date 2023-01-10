@@ -1,0 +1,317 @@
+package javafx;
+import java.awt.AWTException;
+import java.awt.Dimension;
+
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point3D;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.Sphere;
+import javafx.scene.transform.Rotate;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import org.w3c.dom.Node;
+
+public class javafx extends Application {
+private static boolean esc = false;
+private static Scene scene;
+private static int y=0, x=0, z=0;
+public static Box cube = new Box(), eyes = new Box();  
+  private static boolean sm = false;
+ private static double screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        private static double screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+private static Group root;
+private static Group outroot;
+    private static PerspectiveCamera camera;
+  private static Rotate rotation, rotation2, rotation3,piv = new Rotate();
+ 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+
+    @Override
+    public void start(Stage stage) throws Exception {
+      
+       Box floor = new Box();  
+        
+    
+     
+      cube.setDepth(100.0);
+      cube.setHeight(100.0);
+      cube.setWidth(200.0);
+          eyes.setDepth(40.00);
+      eyes.setHeight(40.0);
+      eyes.setWidth(40.0);
+      cube.setCullFace(CullFace.BACK);
+    floor.setDepth(500.0);
+      floor.setHeight(100.0);
+      floor.setWidth(500.0);
+      
+      floor.setCullFace(CullFace.BACK);
+ eyes.setDrawMode(DrawMode.FILL);
+      cube.setDrawMode(DrawMode.FILL);
+      floor.setDrawMode(DrawMode.FILL);
+      PhongMaterial material = new PhongMaterial();
+      material.setDiffuseColor(Color.BROWN);
+
+ 
+        
+ 
+  
+           PhongMaterial materiall = new PhongMaterial();
+
+materiall.setDiffuseMap(new Image(getClass().getResourceAsStream("mcdirt.png")));
+     
+      cube.setMaterial(material);
+   
+    floor.setMaterial(materiall);
+      cube.setTranslateX(0.0);
+      
+      cube.setTranslateY(0.0);
+      cube.setTranslateZ(400.0);
+      eyes.setTranslateZ(100.0);
+      eyes.setTranslateX(0.0);
+      eyes.setTranslateY(0.0);
+  
+     floor.setTranslateX(10.0);
+      floor.setTranslateY(100.0);
+      floor.setTranslateZ(400.0);
+        camera = new PerspectiveCamera( true );
+        camera.setTranslateX( 0 );
+        camera.setTranslateY( 0 );
+   camera.setScaleX(1);
+ camera.setScaleY(1);
+ camera.setScaleZ(1);
+        camera.setTranslateZ( 0 );
+        camera.setFieldOfView(30.0);
+        camera.setFarClip(500.0);
+        camera.setNearClip(0.01);
+        
+stage.setOnHiding( event -> {  System.exit(0);} );
+        PointLight light = new PointLight();
+        camera.setFieldOfView(60);
+        light.setTranslateX( 0 );
+        light.setTranslateY( 0 );
+        light.setTranslateZ( 0 );
+        
+        root = new Group( cube, floor,  light);
+        outroot = new Group(root, eyes);
+        scene = new Scene( outroot, 800, 600, true);
+        stage.setFullScreen(true);
+        scene.setOnMouseMoved( new MouseLook() );
+        scene.setFill(Color.SKYBLUE);
+        scene.setCamera( camera );
+        
+      
+ 
+        stage.setScene(scene);
+    
+        stage.setTitle("Mouselook rotation");
+          scene.setOnKeyPressed(e -> {
+              
+
+         if (e.getCode() == KeyCode.ESCAPE) {
+             esc = true;
+             scene.setCursor(Cursor.DEFAULT);
+         }
+         if (e.getCode() == KeyCode.W) {
+    
+   
+          
+
+       
+    
+
+
+
+int tx = (int) (root.getTranslateZ() - (2));
+          root.setTranslateZ(tx);
+        
+    }
+             if (e.getCode() == KeyCode.S) {
+      
+
+int tx = (int) (root.getTranslateZ() + (2));
+          root.setTranslateZ(tx);
+        
+    }
+                     if (e.getCode() == KeyCode.A) {
+    
+
+int tx = (int) (root.getTranslateX() + (2));
+          root.setTranslateX(tx);
+        
+    }
+                                  if (e.getCode() == KeyCode.D) {
+      
+
+int tx = (int) (root.getTranslateX() - (2));
+          root.setTranslateX(tx);
+        
+    }
+          });
+             
+        stage.show();
+      Timer timer = new Timer();
+
+timer.schedule( new TimerTask() {
+    public void run() {
+         
+  if (eyes.getBoundsInParent().intersects(cube.getBoundsInParent())) { System.out.println((cube.getWidth()/360)*100);
+}
+       
+    }
+ }, 1, 60*10);
+    }
+
+    static class MouseLook implements EventHandler <MouseEvent> {
+      
+        private static int oldX, newX;
+ 
+        
+        private static int oldY, newY;
+        private static boolean alreadyMoved = false;
+     
+      
+        @Override
+        public void handle(MouseEvent event) {
+              
+            
+            if ( alreadyMoved ) {
+          
+    
+        
+              
+             Point3D pivot = new Point3D(0, 0, 0);
+         
+                  Point3D localPivot = root.parentToLocal(pivot);
+                newX = (int) event.getScreenX();
+                newY = (int) event.getScreenY();
+                   
+                if ( oldX < newX ) { 
+                   
+              
+                   
+                 
+                    rotation = new Rotate( -1, localPivot.getX(), localPivot.getY(), localPivot.getZ(),
+                            
+                           
+                            Rotate.Y_AXIS );
+                       
+                   root.getTransforms().addAll( rotation);
+                   
+y=y-1;
+if(y==-1){
+    y = 359;
+}
+
+                    
+                } else if ( oldX > newX ) { 
+                       
+               
+                      
+                    rotation = new Rotate( +2, localPivot.getX(), localPivot.getY(), localPivot.getZ(),
+                            
+                           
+                            Rotate.Y_AXIS );
+               
+                        root.getTransforms().addAll( rotation);
+                         
+y=y+2;
+if(y==362){
+    y = 2;
+}
+                         
+                }
+                     if ( oldY < newY ) { 
+                          if(x!=-180){
+                    rotation2 = new Rotate( -1,
+                          
+                            camera.getTranslateX(), camera.getTranslateY(), camera.getTranslateZ(),
+                            Rotate.X_AXIS );
+             
+                 camera.getTransforms().addAll( rotation2);
+eyes.getTransforms().addAll( rotation2);
+x=x-1;
+                          }
+                          } else if ( oldY > newY ) { 
+                                   if(x!=180){
+                    rotation2 = new Rotate( +1,
+                          
+                            camera.getTranslateX(), camera.getTranslateY(), camera.getTranslateZ(),
+                            Rotate.X_AXIS );
+x=x+1;
+
+ camera.getTransforms().addAll( rotation2);
+ eyes.getTransforms().addAll( rotation2);
+                                   }
+                }
+                  
+                   oldY = newY;
+                oldX = newX;    
+                       
+             if(!esc){
+scene.setCursor(Cursor.NONE);
+             }
+             if(event.getScreenY()>screenHeight-10||event.getScreenX()>screenWidth-10||event.getScreenY()<10||event.getScreenX()<10){
+                 
+             
+                  Robot bot;
+                try {
+                     if(!esc){
+                   
+                        
+                    bot = new Robot();
+                     
+         
+   
+                        bot.mouseMove((int) screenWidth/2, (int) screenHeight/2);
+                     
+                      
+                     }
+                } catch (AWTException ex) {
+                   
+                } 
+             }
+            } else {
+                
+                   
+               
+                oldX = (int) event.getScreenX();
+                oldY = (int) event.getScreenY();
+                alreadyMoved = true;
+                
+            }
+          
+                
+        }
+    }
+}
